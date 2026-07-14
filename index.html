@@ -1,0 +1,1946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corper EasyBuy — Serve Now, Pay Small</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green-deep:#146142;
+    --green-ink:#0E4A32;
+    --charcoal:#1F2421;
+    --amber:#E8A33D;
+    --paper:#FBF8F2;
+    --sage:#E3EDE6;
+    --line:#D9D2C3;
+    --red:#B5493B;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--charcoal);
+    font-family:'Space Grotesk', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:520px;margin:0 auto;min-height:100vh;background:var(--paper);position:relative;padding-bottom:90px;}
+
+  /* HEADER */
+  header{
+    background:var(--green-deep);
+    color:var(--paper);
+    padding:28px 20px 22px;
+    position:relative;
+    overflow:hidden;
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    right:-40px;top:-40px;
+    width:160px;height:160px;
+    border-radius:50%;
+    background:rgba(232,163,61,0.15);
+  }
+  .brand-mark{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:30px;
+    margin:0 0 4px;
+    letter-spacing:-0.01em;
+  }
+  .tagline{
+    font-size:14px;
+    opacity:0.85;
+    margin:0;
+  }
+
+  /* TABS */
+  .tabs{
+    display:flex;
+    background:var(--sage);
+    margin:0 20px;
+    border-radius:10px;
+    padding:4px;
+    position:relative;
+    top:-18px;
+    box-shadow:0 4px 14px rgba(20,97,66,0.12);
+  }
+  .tab{
+    flex:1;
+    text-align:center;
+    padding:10px 0;
+    font-size:13px;
+    font-weight:600;
+    border-radius:8px;
+    cursor:pointer;
+    color:var(--green-ink);
+    transition:all .15s ease;
+    user-select:none;
+  }
+  .tab.active{
+    background:var(--green-deep);
+    color:#fff;
+  }
+
+  .view{padding:0 20px;}
+  .hidden{display:none !important;}
+
+  /* CATALOG */
+  .section-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    color:var(--green-ink);
+    margin:18px 0 10px;
+  }
+  .empty-state{
+    text-align:center;
+    padding:50px 20px;
+    color:#7A7264;
+    font-size:14px;
+    border:1px dashed var(--line);
+    border-radius:12px;
+  }
+  .item-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px;
+    margin-bottom:12px;
+    position:relative;
+  }
+  .item-photo{
+    width:100%;
+    height:150px;
+    object-fit:cover;
+    border-radius:10px;
+    margin-bottom:12px;
+    background:var(--sage);
+    display:block;
+  }
+  .item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .item-name{font-weight:600;font-size:16px;margin:0 0 2px;}
+  .item-price{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:15px;
+    color:var(--green-ink);
+    font-weight:600;
+  }
+  .stock-badge{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    padding:3px 8px;
+    border-radius:20px;
+    white-space:nowrap;
+    height:fit-content;
+  }
+  .stock-badge.in{background:var(--sage);color:var(--green-ink);}
+  .stock-badge.out{background:#F5E3E0;color:var(--red);}
+  .see-plan{
+    margin-top:10px;
+    background:none;
+    border:1px solid var(--green-deep);
+    color:var(--green-deep);
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:12.5px;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    width:100%;
+  }
+  .see-plan:disabled{
+    border-color:var(--line);
+    color:#B0A897;
+    cursor:not-allowed;
+  }
+
+  /* PAYMENT SLIP (ticket look) */
+  .slip{
+    margin-top:12px;
+    background:var(--charcoal);
+    color:var(--paper);
+    border-radius:10px;
+    padding:16px 16px 14px;
+    font-family:'IBM Plex Mono', monospace;
+    position:relative;
+  }
+  .slip::before, .slip::after{
+    content:"";
+    position:absolute;
+    width:16px;height:16px;
+    background:var(--paper);
+    border-radius:50%;
+    top:50%;
+    transform:translateY(-50%);
+  }
+  .slip::before{left:-8px;}
+  .slip::after{right:-8px;}
+  .slip-row{
+    display:flex;
+    justify-content:space-between;
+    font-size:12.5px;
+    padding:5px 0;
+    border-bottom:1px dashed rgba(251,248,244,0.18);
+  }
+  .slip-row:last-child{border-bottom:none;}
+  .slip-row.total{
+    font-weight:600;
+    color:var(--amber);
+    font-size:13.5px;
+    padding-top:8px;
+  }
+  .slip-title{
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    color:var(--amber);
+    margin-bottom:8px;
+  }
+
+  /* ADMIN */
+  .admin-form{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px;
+    margin-bottom:18px;
+  }
+  .field{margin-bottom:12px;}
+  .field label{
+    display:block;
+    font-size:11px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:#7A7264;
+    margin-bottom:5px;
+  }
+  .field input, .field select{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:14px;
+    background:var(--paper);
+    color:var(--charcoal);
+  }
+  .field input:focus, .field select:focus{
+    outline:2px solid var(--green-deep);
+    outline-offset:1px;
+  }
+  .btn-primary{
+    width:100%;
+    background:var(--green-deep);
+    color:#fff;
+    border:none;
+    padding:12px;
+    border-radius:8px;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .btn-primary:active{background:var(--green-ink);}
+  .admin-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-bottom:8px;
+    gap:10px;
+  }
+  .admin-thumb{
+    width:42px;height:42px;
+    border-radius:8px;
+    object-fit:cover;
+    background:var(--sage);
+    flex-shrink:0;
+  }
+  .admin-item-main{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
+  .admin-item-info{flex:1;min-width:0;}
+  .preview-thumb{
+    width:70px;height:70px;
+    object-fit:cover;
+    border-radius:8px;
+    margin-top:8px;
+    display:block;
+  }
+  .remove-photo{
+    margin-top:6px;
+    background:none;
+    border:none;
+    color:var(--red);
+    font-size:12px;
+    font-family:'Space Grotesk', sans-serif;
+    cursor:pointer;
+    padding:0;
+    text-decoration:underline;
+  }
+  .admin-item-name{font-weight:600;font-size:14px;}
+  .admin-item-price{font-family:'IBM Plex Mono', monospace;font-size:12.5px;color:#7A7264;}
+  .admin-actions{display:flex;gap:6px;}
+  .icon-btn{
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:7px;
+    width:30px;height:30px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    font-size:14px;
+  }
+  .icon-btn.danger{color:var(--red);border-color:#F0D6D2;}
+  .icon-btn.toggle-in{color:var(--green-ink);}
+
+  .share-box{
+    background:var(--sage);
+    border-radius:12px;
+    padding:16px;
+    margin:18px 0;
+  }
+  .share-box p{font-size:12.5px;color:var(--green-ink);margin:0 0 10px;line-height:1.5;}
+  .btn-secondary{
+    width:100%;
+    background:#fff;
+    border:1px solid var(--green-deep);
+    color:var(--green-deep);
+    padding:11px;
+    border-radius:8px;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:13.5px;
+    cursor:pointer;
+    margin-bottom:8px;
+  }
+  .btn-secondary:last-child{margin-bottom:0;}
+
+  .toast{
+    position:fixed;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--charcoal);
+    color:#fff;
+    padding:10px 18px;
+    border-radius:20px;
+    font-size:13px;
+    opacity:0;
+    transition:all .25s ease;
+    pointer-events:none;
+    z-index:50;
+    white-space:nowrap;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  footer{
+    text-align:center;
+    padding:16px 20px 24px;
+    font-size:11px;
+    color:#A79E8C;
+    font-family:'IBM Plex Mono', monospace;
+  }
+
+  /* PIN LOCK */
+  .lock-box{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:28px 20px;
+    text-align:center;
+  }
+  .lock-icon{font-size:28px;margin-bottom:10px;}
+  .lock-box p{font-size:13px;color:#7A7264;margin:0 0 16px;}
+  .lock-box input{
+    width:140px;
+    text-align:center;
+    letter-spacing:0.3em;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:18px;
+    padding:10px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    margin-bottom:14px;
+  }
+  .sync-dot{
+    display:inline-block;
+    width:7px;height:7px;
+    border-radius:50%;
+    background:var(--amber);
+    margin-right:6px;
+    animation:pulse 1.4s infinite ease-in-out;
+  }
+  @keyframes pulse{0%,100%{opacity:0.4;}50%{opacity:1;}}
+
+  /* PAYMENTS */
+  .bank-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 0;
+    border-bottom:1px dashed var(--line);
+    font-size:13.5px;
+  }
+  .bank-row:last-of-type{border-bottom:none;}
+  .bank-row span{color:#7A7264;}
+  .bank-row strong{font-family:'IBM Plex Mono', monospace;color:var(--charcoal);}
+  .track-card{
+    margin-top:14px;
+    background:var(--charcoal);
+    color:var(--paper);
+    border-radius:10px;
+    padding:16px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+  }
+  .track-card .t-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed rgba(251,248,244,0.18);}
+  .track-card .t-row:last-child{border-bottom:none;}
+  .track-card .t-status{color:var(--amber);font-weight:600;}
+  .track-not-found{
+    margin-top:12px;
+    font-size:13px;
+    color:#7A7264;
+    text-align:center;
+    padding:14px;
+    border:1px dashed var(--line);
+    border-radius:10px;
+  }
+  .status-pill{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:2px 7px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+  .status-pill.pending{background:#FBF0DC;color:#9C6B1A;}
+  .status-pill.progress{background:var(--sage);color:var(--green-ink);}
+  .status-pill.done{background:var(--sage);color:var(--green-ink);}
+  .receipt-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 12px;
+    margin-bottom:8px;
+  }
+  .receipt-thumb{width:46px;height:46px;object-fit:cover;border-radius:8px;flex-shrink:0;cursor:pointer;}
+  .receipt-info{flex:1;min-width:0;font-size:12.5px;}
+  .receipt-info .r-phone{font-weight:600;}
+  .receipt-info .r-time{color:#A79E8C;font-size:11px;}
+
+  /* ORDER TIMELINE */
+  .timeline{display:flex;align-items:center;justify-content:space-between;margin:14px 0 4px;position:relative;}
+  .timeline::before{content:'';position:absolute;top:11px;left:0;right:0;height:2px;background:var(--line);z-index:0;}
+  .tl-step{display:flex;flex-direction:column;align-items:center;z-index:1;gap:4px;}
+  .tl-dot{width:22px;height:22px;border-radius:50%;background:var(--line);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700;}
+  .tl-dot.done{background:var(--green-deep);}
+  .tl-dot.active{background:var(--amber);animation:pulse 1.4s infinite;}
+  .tl-label{font-family:'IBM Plex Mono',monospace;font-size:8px;text-transform:uppercase;color:#A79E8C;text-align:center;max-width:42px;line-height:1.2;}
+  .tl-label.done{color:var(--green-ink);}
+  .tl-label.active{color:var(--amber);font-weight:600;}
+
+  /* MY ORDERS */
+  .my-order-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;}
+  .my-order-item{font-weight:600;font-size:15px;margin:0 0 2px;}
+  .my-order-meta{font-size:12px;color:#7A7264;margin:0 0 10px;}
+
+  /* VERIFIED BADGE */
+  .verified-badge{display:inline-block;background:#E3F5E9;color:#1B7A3D;font-size:10px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.05em;padding:2px 8px;border-radius:20px;margin-left:4px;}
+  .unverified-badge{display:inline-block;background:#FBF0DC;color:#9C6B1A;font-size:10px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.05em;padding:2px 8px;border-radius:20px;margin-left:4px;}
+  .notes-text{font-size:11px;color:#7A7264;font-style:italic;margin-top:3px;}
+
+  /* CATEGORY FILTER */
+  .cat-btn{
+    flex-shrink:0;
+    padding:6px 14px;
+    border-radius:20px;
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--charcoal);
+    font-family:'Space Grotesk',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:all .15s;
+  }
+  .cat-btn.active{
+    background:var(--green-deep);
+    color:#fff;
+    border-color:var(--green-deep);
+  }
+  #cat-tabs::-webkit-scrollbar{display:none;}
+
+  /* REFERRAL */
+  .ref-code-box{
+    background:var(--charcoal);
+    color:var(--paper);
+    border-radius:12px;
+    padding:16px;
+    margin-top:14px;
+    text-align:center;
+  }
+  .ref-code-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+    color:var(--amber);
+    margin-bottom:6px;
+  }
+  .ref-code-value{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:26px;
+    font-weight:600;
+    letter-spacing:0.1em;
+  }
+  .ref-earnings{
+    margin-top:10px;
+    font-size:12px;
+    color:rgba(251,248,242,0.7);
+  }
+  .ref-earnings strong{color:var(--amber);}
+  .payout-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 14px;
+    margin-bottom:8px;
+    font-size:13px;
+  }
+  .payout-row .p-name{font-weight:600;}
+  .payout-row .p-amount{font-family:'IBM Plex Mono', monospace;color:var(--green-ink);font-weight:600;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="brand-mark">Corper EasyBuy</div>
+    <h1>Serve Now,<br>Pay Small</h1>
+    <p class="tagline">25% deposit · 4 months · 5% flat interest</p>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="catalog">Catalog</div>
+    <div class="tab" data-tab="register">Register</div>
+    <div class="tab" data-tab="payments">Pay</div>
+    <div class="tab" data-tab="admin">Manage</div>
+  </div>
+
+  <!-- CATALOG VIEW -->
+  <div class="view" id="view-catalog">
+    <!-- Search bar -->
+    <div style="padding:0 0 10px;">
+      <input type="text" id="catalog-search" placeholder="🔍  Search items..." style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-family:'Space Grotesk',sans-serif;font-size:14px;background:#fff;color:var(--charcoal);">
+    </div>
+    <!-- Category filter -->
+    <div id="cat-tabs" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none;">
+      <button class="cat-btn active" data-cat="All">All</button>
+      <button class="cat-btn" data-cat="Kitchen">Kitchen</button>
+      <button class="cat-btn" data-cat="Electronics">Electronics</button>
+      <button class="cat-btn" data-cat="Bedding">Bedding</button>
+      <button class="cat-btn" data-cat="Personal Care">Personal Care</button>
+      <button class="cat-btn" data-cat="Other">Other</button>
+    </div>
+    <div class="section-label"><span class="sync-dot" id="sync-dot"></span><span id="catalog-count"></span></div>
+    <div id="catalog-list"></div>
+  </div>
+
+  <!-- REGISTER VIEW -->
+  <div class="view hidden" id="view-register">
+    <!-- returning customer banner (shown if phone saved locally) -->
+    <div id="returning-banner" class="hidden">
+      <div class="admin-form" style="background:var(--sage);border-color:var(--green-deep);">
+        <p style="font-size:13.5px;margin:0 0 10px;color:var(--green-ink);font-weight:600;">Welcome back! 👋</p>
+        <p style="font-size:13px;margin:0 0 12px;color:var(--green-ink);">You're already registered as <strong id="returning-name"></strong>.</p>
+        <button class="btn-secondary" id="go-pay-btn" style="margin-bottom:8px;">Go to Pay & Track →</button>
+        <button class="btn-secondary" id="not-me-btn">Not me — register new</button>
+      </div>
+    </div>
+
+    <!-- registration form (hidden for returning users) -->
+    <div id="reg-form-wrap">
+      <div class="section-label">New order registration</div>
+      <div class="admin-form">
+        <div style="background:var(--sage);border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:12.5px;color:var(--green-ink);line-height:1.5;">
+          Pick an item from the <strong>Catalog</strong> first, then come here to register — the item will be pre-filled below.
+        </div>
+        <div class="field">
+          <label>Full name</label>
+          <input type="text" id="reg-name" placeholder="e.g. Chidinma Okafor">
+        </div>
+        <div class="field">
+          <label>Phone number</label>
+          <input type="tel" id="reg-phone" placeholder="e.g. 0813xxxxxxx">
+        </div>
+        <div class="field">
+          <label>NYSC ID number</label>
+          <input type="text" id="reg-nysc" placeholder="e.g. NYSC/FUA/2026/xxxxxx">
+        </div>
+        <div class="field">
+          <label>State code</label>
+          <input type="text" id="reg-state" placeholder="e.g. LA/26B/xxxx">
+        </div>
+        <div class="field">
+          <label>Item ordered</label>
+          <input type="text" id="reg-item" placeholder="Select from catalog or type here">
+        </div>
+        <div class="field">
+          <label>Item price (₦)</label>
+          <input type="number" id="reg-price" placeholder="Auto-filled from catalog" min="0">
+        </div>
+        <div class="field">
+          <label>Delivery address</label>
+          <textarea id="reg-address" placeholder="Full address where we should deliver" style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:14px;background:var(--paper);resize:none;height:72px;"></textarea>
+        </div>
+        <div class="field">
+          <label>Upload posting letter (PPA posting)</label>
+          <input type="file" id="reg-posting" accept="image/*,application/pdf">
+          <div id="posting-preview-wrap"></div>
+        </div>
+        <div class="field">
+          <label>Referral code (optional)</label>
+          <input type="text" id="reg-refcode" placeholder="e.g. CEB-A7K2" style="text-transform:uppercase;">
+        </div>
+        <div id="reg-plan-preview" class="hidden" style="margin-bottom:12px;"></div>
+        <button class="btn-primary" id="submit-reg-btn">Submit registration</button>
+        <p style="font-size:11px;color:#A79E8C;margin:10px 0 0;text-align:center;">After submitting, go to the <strong>Pay</strong> tab to make your deposit.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYMENTS VIEW -->
+  <div class="view hidden" id="view-payments">
+    <div id="my-orders-section" class="hidden">
+      <div class="section-label">My orders</div>
+      <div id="my-orders-list"></div>
+    </div>
+
+    <div class="section-label">Where to pay</div>
+    <div class="admin-form">
+      <div class="bank-row"><span>Account Name</span><strong>Temlad Stores</strong></div>
+      <div class="bank-row"><span>Account Number</span><strong id="acct-number">6140002666</strong></div>
+      <div class="bank-row"><span>Bank</span><strong>Opay</strong></div>
+      <button class="btn-secondary" id="copy-acct-btn" style="margin-top:10px;">📋 Copy account number</button>
+      <p style="font-size:12px;color:#7A7264;margin:12px 0 0;line-height:1.5;">Transfer your deposit or monthly payment, then upload your receipt below so we can confirm it.</p>
+    </div>
+
+    <div class="section-label">Upload payment receipt</div>
+    <div class="admin-form">
+      <div class="field">
+        <label>Your phone number</label>
+        <input type="tel" id="r-phone" placeholder="e.g. 0813xxxxxxx">
+      </div>
+      <div class="field">
+        <label>Receipt / screenshot</label>
+        <input type="file" id="r-image" accept="image/*">
+        <div id="receipt-preview-wrap"></div>
+      </div>
+      <button class="btn-primary" id="submit-receipt-btn">Submit receipt</button>
+    </div>
+
+    <div class="section-label">Track your order</div>
+    <div class="admin-form">
+      <div class="field">
+        <label>Phone number used at registration</label>
+        <input type="tel" id="track-phone" placeholder="e.g. 0813xxxxxxx">
+      </div>
+      <button class="btn-secondary" id="track-btn" style="margin-bottom:0;">Check status</button>
+      <div id="track-result"></div>
+    </div>
+
+    <div class="section-label">My referral earnings</div>
+    <div class="admin-form">
+      <p style="font-size:12.5px;color:#7A7264;margin:0 0 12px;line-height:1.5;">
+        Enter your phone number to see your referral code, total earnings, and request a payout.
+      </p>
+      <div class="field">
+        <label>Your phone number</label>
+        <input type="tel" id="ref-phone" placeholder="e.g. 0813xxxxxxx">
+      </div>
+      <button class="btn-secondary" id="check-ref-btn" style="margin-bottom:0;">Check my referrals</button>
+      <div id="ref-result"></div>
+      <div id="payout-request-wrap" class="hidden" style="margin-top:12px;">
+        <button class="btn-primary" id="request-payout-btn">Request payout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN VIEW -->
+  <div class="view hidden" id="view-admin">
+
+    <div class="lock-box" id="admin-lock">
+      <div class="lock-icon">🔒</div>
+      <p>Enter your PIN to manage items</p>
+      <input type="password" id="pin-input" inputmode="numeric" maxlength="4" placeholder="••••">
+      <button class="btn-primary" id="pin-submit-btn">Unlock</button>
+    </div>
+
+    <div id="admin-content" class="hidden">
+      <div class="section-label">Add / update item</div>
+      <div class="admin-form">
+        <input type="hidden" id="edit-id">
+        <div class="field">
+          <label>Item name</label>
+          <input type="text" id="f-name" placeholder="e.g. Electric Kettle 1.7L">
+        </div>
+        <div class="field">
+          <label>Category</label>
+          <select id="f-cat">
+            <option value="Kitchen">Kitchen</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Bedding">Bedding</option>
+            <option value="Personal Care">Personal Care</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Price (₦)</label>
+          <input type="number" id="f-price" placeholder="e.g. 15000" min="0">
+        </div>
+        <div class="field">
+          <label>Stock status</label>
+          <select id="f-stock">
+            <option value="in">In stock</option>
+            <option value="out">Out of stock</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Photo (optional)</label>
+          <input type="file" id="f-image" accept="image/*">
+          <div id="image-preview-wrap"></div>
+        </div>
+        <button class="btn-primary" id="save-item-btn">Save item</button>
+      </div>
+
+      <div class="section-label">Current items</div>
+      <div id="admin-list"></div>
+
+      <div class="section-label">Customer orders</div>
+      <div class="admin-form">
+        <input type="hidden" id="order-edit-id">
+        <div class="field">
+          <label>Customer name</label>
+          <input type="text" id="o-name" placeholder="e.g. Chidinma Okafor">
+        </div>
+        <div class="field">
+          <label>Phone number</label>
+          <input type="tel" id="o-phone" placeholder="e.g. 0813xxxxxxx">
+        </div>
+        <div class="field">
+          <label>Item</label>
+          <input type="text" id="o-item" placeholder="e.g. Electric Kettle 1.7L">
+        </div>
+        <div class="field">
+          <label>Item price (₦)</label>
+          <input type="number" id="o-price" placeholder="e.g. 15000" min="0">
+        </div>
+        <div class="field">
+          <label>Deposit received?</label>
+          <select id="o-deposit">
+            <option value="no">Not yet</option>
+            <option value="yes">Yes, received</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Monthly payments made</label>
+          <select id="o-months">
+            <option value="0">0 of 4</option>
+            <option value="1">1 of 4</option>
+            <option value="2">2 of 4</option>
+            <option value="3">3 of 4</option>
+            <option value="4">4 of 4 (completed)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Referral code used (optional)</label>
+          <input type="text" id="o-refcode" placeholder="e.g. CEB-A7K2" style="text-transform:uppercase;">
+        </div>
+        <div class="field">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+            <input type="checkbox" id="o-verified" style="width:16px;height:16px;accent-color:var(--green-deep);">
+            <span>Identity verified (NYSC portal checked)</span>
+          </label>
+        </div>
+        <div class="field">
+          <label>Admin notes (your private record)</label>
+          <textarea id="o-notes" placeholder="e.g. Checked Opay — ₦3,750 received 10/7/26. ID confirmed on portal." style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:13px;background:var(--paper);resize:none;height:60px;"></textarea>
+        </div>
+        <button class="btn-primary" id="save-order-btn">Save order</button>
+      </div>
+      <div id="orders-list"></div>
+
+      <div class="section-label">Payment receipts (pending review)</div>
+      <div id="receipts-list"></div>
+
+      <div class="section-label">Referral payout requests</div>
+      <div id="payouts-list"></div>
+
+      <div class="share-box">
+        <p>Changes here sync live — every corper viewing the Catalog tab sees updates immediately, no re-sending needed. Share the app file once; after that it always shows current prices and stock.</p>
+        <button class="btn-secondary" id="export-btn">⬇ Download app file to share</button>
+        <button class="btn-secondary" id="copy-text-btn">📋 Copy price list as WhatsApp text</button>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>CORPER EASYBUY</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+// ---------- Firebase setup ----------
+const firebaseConfig = {
+  apiKey: "AIzaSyD5vHYCoAARFReKCqT67uXJTnjVaRRBPeA",
+  authDomain: "corper-easybuy.firebaseapp.com",
+  projectId: "corper-easybuy",
+  storageBucket: "corper-easybuy.firebasestorage.app",
+  messagingSenderId: "406581745443",
+  appId: "1:406581745443:web:c1431dfa9f4f473aa49e96"
+};
+
+let db = null, itemsRef = null, ordersRef = null, receiptsRef = null, referrersRef = null, payoutsRef = null, firebaseReady = false;
+try{
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+  itemsRef = db.collection('items');
+  ordersRef = db.collection('orders');
+  receiptsRef = db.collection('receipts');
+  referrersRef = db.collection('referrers');
+  payoutsRef = db.collection('payouts');
+  firebaseReady = true;
+}catch(e){
+  console.error('Firebase failed to load:', e);
+}
+
+const ADMIN_PIN = "3096";
+let adminUnlocked = false;
+
+// ---------- Plan config ----------
+const PLAN = { depositRate: 0.25, months: 4, interestRate: 0.05 };
+
+let items = [];
+let orders = [];
+let receipts = [];
+let referrers = [];
+let payouts = [];
+
+// ---------- Termii SMS ----------
+const TERMII_KEY = 'tlv_Hn4rlapWW6cTRqdHB5sWSkIwSNepn-VSBab_mQ08blk';
+
+async function sendSMS(to, message){
+  try{
+    const res = await fetch('https://v3.api.termii.com/api/sms/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to: '234' + to.replace(/^0/, ''),
+        from: 'N-Alert',
+        sms: message,
+        type: 'plain',
+        channel: 'generic',
+        api_key: TERMII_KEY
+      })
+    });
+    const data = await res.json();
+    console.log('SMS sent:', data);
+    return data;
+  }catch(err){
+    console.error('SMS error:', err);
+  }
+}
+
+function naira(n){
+  return '₦' + Number(n).toLocaleString('en-NG', {maximumFractionDigits:0});
+}
+
+// ---------- Firestore live sync ----------
+const syncDot = document.getElementById('sync-dot');
+if(firebaseReady){
+  itemsRef.orderBy('createdAt', 'asc').onSnapshot((snapshot)=>{
+    items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    if(syncDot) syncDot.style.background = 'var(--green-deep)';
+    renderCatalog();
+    if(adminUnlocked) renderAdmin();
+  }, (err)=>{
+    console.error('Firestore sync error:', err);
+    if(syncDot) syncDot.style.background = 'var(--red)';
+    showToast('Connection issue — check your internet');
+  });
+}else{
+  if(syncDot) syncDot.style.background = 'var(--red)';
+}
+
+if(firebaseReady){
+  ordersRef.onSnapshot((snapshot)=>{
+    orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    if(adminUnlocked) renderOrders();
+    renderMyOrders();
+  }, (err)=>console.error('Orders sync error:', err));
+
+  receiptsRef.orderBy('createdAt','desc').onSnapshot((snapshot)=>{
+    receipts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    if(adminUnlocked) renderReceipts();
+  }, (err)=>console.error('Receipts sync error:', err));
+
+  referrersRef.onSnapshot((snapshot)=>{
+    referrers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  }, (err)=>console.error('Referrers sync error:', err));
+
+  payoutsRef.onSnapshot((snapshot)=>{
+    payouts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    if(adminUnlocked) renderPayouts();
+  }, (err)=>console.error('Payouts sync error:', err));
+}
+
+function calcPlan(price){
+  const deposit = Math.round(price * PLAN.depositRate);
+  const balance = price - deposit;
+  const balanceWithInterest = Math.round(balance * (1 + PLAN.interestRate));
+  const monthly = Math.round(balanceWithInterest / PLAN.months);
+  const total = deposit + balanceWithInterest;
+  return { deposit, balanceWithInterest, monthly, total };
+}
+
+// ---------- Tabs ----------
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    switchTab(tab.dataset.tab);
+    // on register tab with no item prefill, check returning customer
+    if(tab.dataset.tab === 'register'){
+      const savedPhone = localStorage.getItem('ceb_phone');
+      const savedName = localStorage.getItem('ceb_name');
+      if(savedPhone && savedName){
+        showReturningBanner(savedName, savedPhone, null, null);
+      }else{
+        document.getElementById('returning-banner').classList.add('hidden');
+        document.getElementById('reg-form-wrap').classList.remove('hidden');
+        showRegForm(null, null);
+      }
+    }
+  });
+});
+
+document.getElementById('pin-submit-btn').addEventListener('click', unlockAdmin);
+document.getElementById('pin-input').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') unlockAdmin();
+});
+function unlockAdmin(){
+  const val = document.getElementById('pin-input').value.trim();
+  if(val === ADMIN_PIN){
+    adminUnlocked = true;
+    document.getElementById('admin-lock').classList.add('hidden');
+    document.getElementById('admin-content').classList.remove('hidden');
+    document.getElementById('pin-input').value = '';
+    renderAdmin();
+    renderOrders();
+    renderReceipts();
+    renderPayouts();
+  }else{
+    showToast('Wrong PIN');
+    document.getElementById('pin-input').value = '';
+  }
+}
+
+// ---------- Catalog rendering ----------
+let activeCat = 'All';
+let searchQuery = '';
+
+function renderCatalog(){
+  const list = document.getElementById('catalog-list');
+  const countEl = document.getElementById('catalog-count');
+  list.innerHTML = '';
+
+  // filter
+  let filtered = items.filter(item=>{
+    const matchCat = activeCat === 'All' || (item.category || 'Other') === activeCat;
+    const matchSearch = !searchQuery || item.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchCat && matchSearch;
+  });
+
+  if(countEl){
+    countEl.textContent = filtered.length === items.length
+      ? `${items.length} item${items.length!==1?'s':''}`
+      : `${filtered.length} of ${items.length} items`;
+  }
+
+  if(items.length===0){
+    list.innerHTML = '<div class="empty-state">No items yet. Go to "Manage" to add your stock.</div>';
+    return;
+  }
+  if(filtered.length===0){
+    list.innerHTML = '<div class="empty-state">No items match your search.</div>';
+    return;
+  }
+
+  filtered.forEach(item=>{
+    const plan = calcPlan(item.price);
+    const cat = item.category || 'Other';
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.innerHTML = `
+      ${item.image ? `<img class="item-photo" src="${item.image}" alt="${escapeHtml(item.name)}">` : ''}
+      <div class="item-top">
+        <div>
+          <p class="item-name">${escapeHtml(item.name)}</p>
+          <p class="item-price">${naira(item.price)}</p>
+        </div>
+        <span class="stock-badge ${item.stock}">${item.stock==='in' ? 'In stock' : 'Sold out'}</span>
+      </div>
+      <div style="margin:4px 0 8px;">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.06em;background:var(--sage);color:var(--green-ink);padding:2px 8px;border-radius:20px;">${escapeHtml(cat)}</span>
+      </div>
+      <button class="see-plan" data-id="${item.id}" ${item.stock==='out' ? 'disabled' : ''}>
+        ${item.stock==='out' ? 'Not available' : 'See payment plan ↓'}
+      </button>
+      ${item.stock==='in' ? `<button class="order-btn" data-name="${escapeHtml(item.name)}" data-price="${item.price}" style="margin-top:6px;width:100%;background:var(--green-deep);color:#fff;border:none;padding:10px;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;cursor:pointer;">Order this →</button>` : ''}
+      <div class="slip-holder"></div>
+    `;
+    list.appendChild(card);
+
+    const btn = card.querySelector('.see-plan');
+    const holder = card.querySelector('.slip-holder');
+    let open = false;
+    btn.addEventListener('click', ()=>{
+      if(item.stock==='out') return;
+      open = !open;
+      if(open){
+        btn.textContent = 'Hide payment plan ↑';
+        holder.innerHTML = `
+          <div class="slip">
+            <div class="slip-title">Payment breakdown</div>
+            <div class="slip-row"><span>Item price</span><span>${naira(item.price)}</span></div>
+            <div class="slip-row"><span>Deposit (25%)</span><span>${naira(plan.deposit)}</span></div>
+            <div class="slip-row"><span>Balance + 5% interest</span><span>${naira(plan.balanceWithInterest)}</span></div>
+            <div class="slip-row"><span>Monthly × 4 months</span><span>${naira(plan.monthly)}</span></div>
+            <div class="slip-row total"><span>Total payable</span><span>${naira(plan.total)}</span></div>
+          </div>
+        `;
+      }else{
+        btn.textContent = 'See payment plan ↓';
+        holder.innerHTML = '';
+      }
+    });
+
+    // Order this button
+    const orderBtn = card.querySelector('.order-btn');
+    if(orderBtn){
+      orderBtn.addEventListener('click', ()=>{
+        prefillRegistration(item.name, item.price);
+      });
+    }
+  });
+}
+
+// ---------- Prefill registration from catalog ----------
+function prefillRegistration(itemName, itemPrice){
+  // switch to register tab
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('[data-tab=register]').classList.add('active');
+  document.getElementById('view-catalog').classList.add('hidden');
+  document.getElementById('view-register').classList.remove('hidden');
+  document.getElementById('view-payments').classList.add('hidden');
+  document.getElementById('view-admin').classList.add('hidden');
+
+  // check if returning customer
+  const savedPhone = localStorage.getItem('ceb_phone');
+  const savedName = localStorage.getItem('ceb_name');
+  if(savedPhone && savedName){
+    showReturningBanner(savedName, savedPhone, itemName, itemPrice);
+  }else{
+    showRegForm(itemName, itemPrice);
+  }
+}
+
+function showReturningBanner(name, phone, itemName, itemPrice){
+  document.getElementById('returning-name').textContent = name;
+  document.getElementById('returning-banner').classList.remove('hidden');
+  document.getElementById('reg-form-wrap').classList.add('hidden');
+
+  document.getElementById('go-pay-btn').onclick = ()=>{
+    switchTab('payments');
+    // pre-fill phone in pay tab
+    const tp = document.getElementById('track-phone');
+    if(tp) tp.value = phone;
+    const rp = document.getElementById('r-phone');
+    if(rp) rp.value = phone;
+    const refp = document.getElementById('ref-phone');
+    if(refp) refp.value = phone;
+  };
+  document.getElementById('not-me-btn').onclick = ()=>{
+    document.getElementById('returning-banner').classList.add('hidden');
+    document.getElementById('reg-form-wrap').classList.remove('hidden');
+    showRegForm(itemName, itemPrice);
+  };
+}
+
+function showRegForm(itemName, itemPrice){
+  document.getElementById('reg-form-wrap').classList.remove('hidden');
+  if(itemName) document.getElementById('reg-item').value = itemName;
+  if(itemPrice){
+    document.getElementById('reg-price').value = itemPrice;
+    const plan = calcPlan(itemPrice);
+    const preview = document.getElementById('reg-plan-preview');
+    preview.classList.remove('hidden');
+    preview.innerHTML = `
+      <div class="slip">
+        <div class="slip-title">Your payment plan</div>
+        <div class="slip-row"><span>Item price</span><span>${naira(itemPrice)}</span></div>
+        <div class="slip-row"><span>Deposit due now (25%)</span><span>${naira(plan.deposit)}</span></div>
+        <div class="slip-row"><span>Monthly × 4 months</span><span>${naira(plan.monthly)}</span></div>
+        <div class="slip-row total"><span>Total payable</span><span>${naira(plan.total)}</span></div>
+      </div>
+    `;
+  }
+}
+
+function switchTab(tabName){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('[data-tab='+tabName+']').classList.add('active');
+  document.getElementById('view-catalog').classList.toggle('hidden', tabName!=='catalog');
+  document.getElementById('view-register').classList.toggle('hidden', tabName!=='register');
+  document.getElementById('view-payments').classList.toggle('hidden', tabName!=='payments');
+  document.getElementById('view-admin').classList.toggle('hidden', tabName!=='admin');
+  if(tabName==='payments') renderMyOrders();
+  if(tabName==='admin'){
+    document.getElementById('admin-lock').classList.toggle('hidden', adminUnlocked);
+    document.getElementById('admin-content').classList.toggle('hidden', !adminUnlocked);
+    if(adminUnlocked){ renderAdmin(); renderOrders(); renderReceipts(); renderPayouts(); }
+  }
+}
+
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+// ---------- Admin rendering ----------
+function renderAdmin(){
+  const list = document.getElementById('admin-list');
+  list.innerHTML = '';
+  if(items.length===0){
+    list.innerHTML = '<div class="empty-state">No items added yet.</div>';
+    return;
+  }
+  items.forEach(item=>{
+    const row = document.createElement('div');
+    row.className = 'admin-item';
+    row.innerHTML = `
+      <div class="admin-item-main">
+        ${item.image ? `<img class="admin-thumb" src="${item.image}" alt="">` : ''}
+        <div class="admin-item-info">
+          <div class="admin-item-name">${escapeHtml(item.name)}</div>
+          <div class="admin-item-price">${naira(item.price)} · ${item.stock==='in' ? 'In stock' : 'Sold out'} · ${escapeHtml(item.category||'Other')}</div>
+        </div>
+      </div>
+      <div class="admin-actions">
+        <button class="icon-btn toggle-in" title="Toggle stock" data-action="toggle" data-id="${item.id}">↺</button>
+        <button class="icon-btn" title="Edit" data-action="edit" data-id="${item.id}">✎</button>
+        <button class="icon-btn danger" title="Delete" data-action="delete" data-id="${item.id}">✕</button>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+
+  list.querySelectorAll('.icon-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.dataset.id;
+      const action = btn.dataset.action;
+      const idx = items.findIndex(i=>i.id===id);
+      if(idx===-1) return;
+      if(!firebaseReady){ showToast('Not connected — check your internet'); return; }
+      if(action==='delete'){
+        if(confirm('Remove "' + items[idx].name + '" from the catalog?')){
+          itemsRef.doc(id).delete()
+            .then(()=>showToast('Item removed'))
+            .catch(()=>showToast('Could not delete — check connection'));
+        }
+      }else if(action==='toggle'){
+        const newStock = items[idx].stock==='in' ? 'out' : 'in';
+        itemsRef.doc(id).update({ stock: newStock })
+          .then(()=>showToast(newStock==='in' ? 'Marked in stock' : 'Marked sold out'))
+          .catch(()=>showToast('Could not update — check connection'));
+      }else if(action==='edit'){
+        document.getElementById('edit-id').value = items[idx].id;
+        document.getElementById('f-name').value = items[idx].name;
+        document.getElementById('f-price').value = items[idx].price;
+        document.getElementById('f-stock').value = items[idx].stock;
+        document.getElementById('f-cat').value = items[idx].category || 'Other';
+        currentImage = items[idx].image || '';
+        renderImagePreview();
+        document.getElementById('f-name').scrollIntoView({behavior:'smooth', block:'center'});
+      }
+    });
+  });
+}
+
+// ---------- Phone normalization ----------
+function normPhone(p){
+  return (p||'').replace(/[^0-9]/g, '').slice(-11);
+}
+
+// ---------- Orders (admin) ----------
+function orderStatusLabel(order){
+  if(order.months >= 4) return { text: 'Completed', cls: 'done' };
+  if(order.deposit === 'yes') return { text: order.months + '/4 paid', cls: 'progress' };
+  return { text: 'Awaiting deposit', cls: 'pending' };
+}
+
+function renderOrders(){
+  const list = document.getElementById('orders-list');
+  if(!list) return;
+  list.innerHTML = '';
+  if(orders.length===0){
+    list.innerHTML = '<div class="empty-state">No orders logged yet.</div>';
+    return;
+  }
+  orders.forEach(order=>{
+    const status = orderStatusLabel(order);
+    const row = document.createElement('div');
+    row.className = 'admin-item';
+    row.innerHTML = `
+      <div style="display:flex;align-items:flex-start;gap:10px;flex:1;min-width:0;">
+        ${order.posting && order.posting.startsWith('data:') ? `<img class="admin-thumb" src="${order.posting}" alt="" style="flex-shrink:0;cursor:pointer;" onclick="window.open('${order.posting}','_blank')">` : ''}
+        <div class="admin-item-info">
+          <div class="admin-item-name">${escapeHtml(order.name)} · ${escapeHtml(order.phone)}
+            ${order.verified ? '<span class="verified-badge">✓ Verified</span>' : '<span class="unverified-badge">Unverified</span>'}
+          </div>
+          <div class="admin-item-price">${escapeHtml(order.item)} — ${naira(order.price)} <span class="status-pill ${status.cls}">${status.text}</span></div>
+          ${order.nysc ? `<div style="font-size:11px;color:#A79E8C;">${escapeHtml(order.nysc)}${order.state?' · '+escapeHtml(order.state):''}${order.address?' · '+escapeHtml(order.address.slice(0,40)):''}</div>` : ''}
+          ${order.notes ? `<div class="notes-text">📝 ${escapeHtml(order.notes)}</div>` : ''}
+        </div>
+      </div>
+      <div class="admin-actions" style="flex-shrink:0;">
+        <button class="icon-btn" title="Send reminder SMS" data-oaction="remind" data-oid="${order.id}">📨</button>
+        <button class="icon-btn" title="Edit" data-oaction="edit" data-oid="${order.id}">✎</button>
+        <button class="icon-btn danger" title="Delete" data-oaction="delete" data-oid="${order.id}">✕</button>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+
+  list.querySelectorAll('[data-oaction]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(!firebaseReady){ showToast('Not connected — check your internet'); return; }
+      const id = btn.dataset.oid;
+      const action = btn.dataset.oaction;
+      const order = orders.find(o=>o.id===id);
+      if(!order) return;
+      if(action==='delete'){
+        if(confirm('Remove order for "' + order.name + '"?')){
+          ordersRef.doc(id).delete()
+            .then(()=>showToast('Order removed'))
+            .catch(()=>showToast('Could not delete — check connection'));
+        }
+      }else if(action==='remind'){
+        const plan = calcPlan(order.price);
+        const monthsDone = order.months || 0;
+        const remaining = plan.total - plan.deposit - (monthsDone * plan.monthly);
+        const firstName = order.name.split(' ')[0];
+        const msg = order.deposit !== 'yes'
+          ? `Hi ${firstName}, your Corper EasyBuy deposit of ${naira(plan.deposit)} for ${order.item} is still pending. Pay to Temlad Stores, 6140002666, Opay. Call 08143515461 for help. - Corper EasyBuy`
+          : monthsDone >= 4
+            ? `Hi ${firstName}, you have completed all payments for your ${order.item}. Thank you for choosing Corper EasyBuy!`
+            : `Hi ${firstName}, reminder: your monthly Corper EasyBuy payment of ${naira(plan.monthly)} for ${order.item} is due. Balance left: ${naira(Math.max(remaining,0))}. Pay to Temlad Stores, 6140002666, Opay. - Corper EasyBuy`;
+        sendSMS(order.phone, msg).then(()=>showToast('Reminder sent to ' + order.phone));
+      }else if(action==='edit'){
+        document.getElementById('order-edit-id').value = order.id;
+        document.getElementById('o-name').value = order.name;
+        document.getElementById('o-phone').value = order.phone;
+        document.getElementById('o-item').value = order.item;
+        document.getElementById('o-price').value = order.price;
+        document.getElementById('o-deposit').value = order.deposit;
+        document.getElementById('o-months').value = order.months;
+        document.getElementById('o-refcode').value = order.refCode || '';
+        document.getElementById('o-verified').checked = order.verified || false;
+        document.getElementById('o-notes').value = order.notes || '';
+        document.getElementById('o-name').scrollIntoView({behavior:'smooth', block:'center'});
+      }
+    });
+  });
+}
+
+document.getElementById('save-order-btn').addEventListener('click', ()=>{
+  const editId = document.getElementById('order-edit-id').value;
+  const name = document.getElementById('o-name').value.trim();
+  const phone = normPhone(document.getElementById('o-phone').value);
+  const item = document.getElementById('o-item').value.trim();
+  const price = parseFloat(document.getElementById('o-price').value);
+  const deposit = document.getElementById('o-deposit').value;
+  const months = parseInt(document.getElementById('o-months').value, 10);
+  const refCode = document.getElementById('o-refcode').value.trim().toUpperCase();
+  const verified = document.getElementById('o-verified').checked;
+  const notes = document.getElementById('o-notes').value.trim();
+
+  if(!name || !phone || !item || !price){ showToast('Fill in all order fields'); return; }
+  if(!firebaseReady){ showToast('Not connected — check your internet'); return; }
+
+  // check if deposit is being toggled on for the first time (to credit referrer)
+  let prevDepositPaid = false;
+  if(editId){
+    const existing = orders.find(o=>o.id===editId);
+    if(existing) prevDepositPaid = existing.deposit === 'yes';
+  }
+
+  const data = { name, phone, item, price, deposit, months, refCode, verified, notes, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+  const writePromise = editId ? ordersRef.doc(editId).update(data) : ordersRef.add(data);
+
+  writePromise.then(()=>{
+    const depositJustReceived = deposit === 'yes' && !prevDepositPaid;
+
+    // Credit referrer if deposit just received
+    if(depositJustReceived && refCode){
+      const referrer = referrers.find(r => r.code === refCode);
+      if(referrer){
+        const balance = price * 0.75;
+        const commission = Math.round(balance * 0.01);
+        referrersRef.doc(referrer.id).update({
+          earnings: (referrer.earnings || 0) + commission
+        }).catch(err => console.error('Referral credit error:', err));
+      }
+    }
+
+    // SMS: deposit confirmed
+    if(depositJustReceived){
+      const plan = calcPlan(price);
+      sendSMS(phone,
+        `Hi ${name.split(' ')[0]}, your Corper EasyBuy deposit of ${naira(plan.deposit)} for ${item} has been confirmed! Your monthly payment of ${naira(plan.monthly)} starts next month. Track your order on the app. - Corper EasyBuy`
+      );
+    }
+
+    // SMS: monthly payment confirmed
+    const prevOrder = editId ? orders.find(o=>o.id===editId) : null;
+    const prevMonths = prevOrder ? (prevOrder.months || 0) : 0;
+    if(months > prevMonths && deposit === 'yes'){
+      const plan = calcPlan(price);
+      const remaining = plan.total - plan.deposit - (months * plan.monthly);
+      if(months >= 4){
+        sendSMS(phone,
+          `Congratulations ${name.split(' ')[0]}! You have completed all payments for your ${item}. Thank you for choosing Corper EasyBuy! - Corper EasyBuy`
+        );
+      }else{
+        sendSMS(phone,
+          `Hi ${name.split(' ')[0]}, payment ${months} of 4 confirmed for your ${item}. Balance remaining: ${naira(Math.max(remaining,0))}. Next payment due next month. - Corper EasyBuy`
+        );
+      }
+    }
+
+    showToast(editId ? 'Order updated' : 'Order saved');
+    document.getElementById('order-edit-id').value = '';
+    document.getElementById('o-name').value = '';
+    document.getElementById('o-phone').value = '';
+    document.getElementById('o-item').value = '';
+    document.getElementById('o-price').value = '';
+    document.getElementById('o-deposit').value = 'no';
+    document.getElementById('o-months').value = '0';
+    document.getElementById('o-refcode').value = '';
+    document.getElementById('o-verified').checked = false;
+    document.getElementById('o-notes').value = '';
+  }).catch((err)=>{
+    console.error(err);
+    showToast('Could not save order');
+  });
+});
+
+// ---------- Receipts (admin) ----------
+function renderReceipts(){
+  const list = document.getElementById('receipts-list');
+  if(!list) return;
+  list.innerHTML = '';
+  const pending = receipts.filter(r=>!r.reviewed);
+  if(pending.length===0){
+    list.innerHTML = '<div class="empty-state">No pending receipts.</div>';
+    return;
+  }
+  pending.forEach(r=>{
+    const row = document.createElement('div');
+    row.className = 'receipt-row';
+    const time = r.createdAt && r.createdAt.toDate ? r.createdAt.toDate().toLocaleString('en-NG') : '';
+    row.innerHTML = `
+      <img class="receipt-thumb" src="${r.image}" data-full="${r.image}">
+      <div class="receipt-info">
+        <div class="r-phone">${escapeHtml(r.phone)}</div>
+        <div class="r-time">${time}</div>
+      </div>
+      <button class="icon-btn toggle-in" title="Mark reviewed" data-rid="${r.id}">✓</button>
+    `;
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.receipt-thumb').forEach(img=>{
+    img.addEventListener('click', ()=>window.open(img.dataset.full, '_blank'));
+  });
+  list.querySelectorAll('[data-rid]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(!firebaseReady){ showToast('Not connected — check your internet'); return; }
+      receiptsRef.doc(btn.dataset.rid).update({ reviewed: true })
+        .then(()=>showToast('Marked as reviewed'))
+        .catch(()=>showToast('Could not update'));
+    });
+  });
+}
+
+// ---------- Timeline builder ----------
+function buildTimeline(order){
+  const steps = [
+    { key:'registered', label:'Registered' },
+    { key:'verified',   label:'Verified' },
+    { key:'deposit',    label:'Deposit' },
+    { key:'m1',         label:'Month 1' },
+    { key:'m2',         label:'Month 2' },
+    { key:'m3',         label:'Month 3' },
+    { key:'done',       label:'Complete' },
+  ];
+  const reached = {
+    registered: true,
+    verified: order.verified || false,
+    deposit: order.deposit === 'yes',
+    m1: (order.months||0) >= 1,
+    m2: (order.months||0) >= 2,
+    m3: (order.months||0) >= 3,
+    done: (order.months||0) >= 4,
+  };
+  // find active step
+  let activeIdx = 0;
+  steps.forEach((s,i)=>{ if(reached[s.key]) activeIdx = i; });
+  const nextIdx = Math.min(activeIdx + 1, steps.length - 1);
+
+  return `<div class="timeline">` + steps.map((s,i)=>{
+    const isDone = reached[s.key];
+    const isActive = !isDone && i === nextIdx;
+    const cls = isDone ? 'done' : isActive ? 'active' : '';
+    return `<div class="tl-step">
+      <div class="tl-dot ${cls}">${isDone ? '✓' : i+1}</div>
+      <div class="tl-label ${cls}">${s.label}</div>
+    </div>`;
+  }).join('') + `</div>`;
+}
+
+// ---------- My Orders (Pay tab) ----------
+function renderMyOrders(){
+  const savedPhone = localStorage.getItem('ceb_phone');
+  const section = document.getElementById('my-orders-section');
+  const list = document.getElementById('my-orders-list');
+  if(!savedPhone || !section || !list) return;
+
+  const myOrders = orders.filter(o => normPhone(o.phone) === normPhone(savedPhone));
+  if(myOrders.length === 0){ section.classList.add('hidden'); return; }
+
+  section.classList.remove('hidden');
+  list.innerHTML = '';
+  myOrders.forEach(order=>{
+    const plan = calcPlan(order.price);
+    const status = orderStatusLabel(order);
+    const remaining = plan.total - (order.deposit==='yes'?plan.deposit:0) - ((order.months||0)*plan.monthly);
+    const card = document.createElement('div');
+    card.className = 'my-order-card';
+    card.innerHTML = `
+      <p class="my-order-item">${escapeHtml(order.item)}</p>
+      <p class="my-order-meta">${naira(order.price)} item · ${naira(plan.total)} total payable</p>
+      ${buildTimeline(order)}
+      <div class="slip" style="margin-top:12px;">
+        <div class="slip-title">Payment summary</div>
+        <div class="slip-row"><span>Deposit</span><span>${order.deposit==='yes'?'Paid ✓':'Pending'}</span></div>
+        <div class="slip-row"><span>Monthly payments</span><span>${order.months||0} of 4 paid</span></div>
+        <div class="slip-row"><span>Balance remaining</span><span>${naira(Math.max(remaining,0))}</span></div>
+        <div class="slip-row total"><span>Status</span><span class="t-status">${status.text}</span></div>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+// ---------- Registration form ----------
+let currentPostingImage = '';
+document.getElementById('reg-posting').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const wrap = document.getElementById('posting-preview-wrap');
+  if(file.type === 'application/pdf'){
+    currentPostingImage = 'PDF_ATTACHED';
+    wrap.innerHTML = `<p style="font-size:12px;color:var(--green-ink);margin:6px 0 0;">✓ PDF selected: ${escapeHtml(file.name)}</p>`;
+    return;
+  }
+  compressImage(file, 900, 0.7).then(dataUrl=>{
+    currentPostingImage = dataUrl;
+    wrap.innerHTML = `<img class="preview-thumb" src="${dataUrl}">`;
+  }).catch(()=>{
+    showToast('Could not process that file');
+    e.target.value='';
+  });
+});
+
+document.getElementById('submit-reg-btn').addEventListener('click', async ()=>{
+  const name    = document.getElementById('reg-name').value.trim();
+  const phone   = normPhone(document.getElementById('reg-phone').value);
+  const nysc    = document.getElementById('reg-nysc').value.trim();
+  const state   = document.getElementById('reg-state').value.trim();
+  const item    = document.getElementById('reg-item').value.trim();
+  const price   = parseFloat(document.getElementById('reg-price').value);
+  const address = document.getElementById('reg-address').value.trim();
+  const refCode = document.getElementById('reg-refcode').value.trim().toUpperCase();
+  const btn     = document.getElementById('submit-reg-btn');
+
+  if(!name)   { showToast('Enter your full name'); return; }
+  if(!phone)  { showToast('Enter your phone number'); return; }
+  if(!nysc)   { showToast('Enter your NYSC ID'); return; }
+  if(!state)  { showToast('Enter your state code'); return; }
+  if(!item)   { showToast('Enter the item you want'); return; }
+  if(!price||price<=0) { showToast('Enter the item price'); return; }
+  if(!address){ showToast('Enter your delivery address'); return; }
+  if(!currentPostingImage){ showToast('Upload your posting letter'); return; }
+  if(!firebaseReady){ showToast('Not connected — check your internet'); return; }
+
+  // Block duplicate: same phone + same item with incomplete order
+  const duplicate = orders.find(o =>
+    normPhone(o.phone) === normPhone(phone) &&
+    o.item.toLowerCase().trim() === item.toLowerCase().trim() &&
+    (o.months||0) < 4
+  );
+  if(duplicate){
+    showToast('You already have an active order for this item');
+    btn.disabled=false; btn.textContent='Submit registration';
+    return;
+  }
+
+  btn.disabled=true; btn.textContent='Submitting...';
+
+  const postingData = currentPostingImage === 'PDF_ATTACHED'
+    ? 'PDF (uploaded separately)'
+    : currentPostingImage;
+
+  ordersRef.add({
+    name, phone, nysc, state, item, price,
+    address, refCode,
+    posting: postingData,
+    deposit: 'no', months: 0,
+    status: 'Pending verification',
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(()=>{
+    // remember this customer on device
+    localStorage.setItem('ceb_phone', phone);
+    localStorage.setItem('ceb_name', name);
+
+    showToast('Registration submitted!');
+    btn.disabled=false; btn.textContent='Submit registration';
+
+    // clear form
+    ['reg-name','reg-nysc','reg-state','reg-item','reg-price','reg-address','reg-refcode'].forEach(id=>{
+      document.getElementById(id).value='';
+    });
+    document.getElementById('reg-phone').value='';
+    document.getElementById('reg-posting').value='';
+    document.getElementById('posting-preview-wrap').innerHTML='';
+    document.getElementById('reg-plan-preview').classList.add('hidden');
+    currentPostingImage='';
+
+    // redirect to Pay tab after a moment
+    setTimeout(()=>{
+      switchTab('payments');
+      const tp = document.getElementById('track-phone');
+      if(tp) tp.value = normPhone(phone);
+      const rp = document.getElementById('r-phone');
+      if(rp) rp.value = normPhone(phone);
+    }, 1200);
+  }).catch((err)=>{
+    console.error(err);
+    showToast('Could not submit — check your internet');
+    btn.disabled=false; btn.textContent='Submit registration';
+  });
+});
+
+// ---------- Payments tab: bank copy, receipt submit, order tracking ----------
+
+document.getElementById('copy-acct-btn').addEventListener('click', ()=>{
+  navigator.clipboard.writeText('6140002666').then(()=>{
+    showToast('Account number copied');
+  }).catch(()=>showToast('Could not copy'));
+});
+
+// auto-fill phone for returning customers on Pay tab
+(function autoFillPayTab(){
+  const saved = localStorage.getItem('ceb_phone');
+  if(!saved) return;
+  ['track-phone','r-phone','ref-phone'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el && !el.value) el.value = saved;
+  });
+})();
+
+let currentReceiptImage = '';
+document.getElementById('r-image').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  compressImage(file, 900, 0.7).then(dataUrl=>{
+    currentReceiptImage = dataUrl;
+    const wrap = document.getElementById('receipt-preview-wrap');
+    wrap.innerHTML = `<img class="preview-thumb" src="${dataUrl}">`;
+  }).catch(()=>{
+    showToast('Could not process that photo');
+    e.target.value = '';
+  });
+});
+
+document.getElementById('submit-receipt-btn').addEventListener('click', ()=>{
+  const phone = normPhone(document.getElementById('r-phone').value);
+  const btn = document.getElementById('submit-receipt-btn');
+  if(!phone){ showToast('Enter your phone number'); return; }
+  if(!currentReceiptImage){ showToast('Upload your receipt photo'); return; }
+  if(!firebaseReady){ showToast('Not connected — check your internet'); return; }
+
+  btn.disabled = true; btn.textContent = 'Submitting...';
+  receiptsRef.add({
+    phone, image: currentReceiptImage, reviewed: false,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(()=>{
+    showToast('Receipt submitted — we will confirm shortly');
+    document.getElementById('r-phone').value = '';
+    document.getElementById('r-image').value = '';
+    document.getElementById('receipt-preview-wrap').innerHTML = '';
+    currentReceiptImage = '';
+  }).catch((err)=>{
+    console.error(err);
+    showToast('Could not submit — check your internet');
+  }).finally(()=>{
+    btn.disabled = false; btn.textContent = 'Submit receipt';
+  });
+});
+
+document.getElementById('track-btn').addEventListener('click', ()=>{
+  const phone = normPhone(document.getElementById('track-phone').value);
+  const resultBox = document.getElementById('track-result');
+  if(!phone){ showToast('Enter your phone number'); return; }
+  const order = orders.find(o=>normPhone(o.phone) === phone);
+  if(!order){
+    resultBox.innerHTML = '<div class="track-not-found">No order found for that number yet. If you just registered, please allow some time for us to confirm.</div>';
+    return;
+  }
+  const plan = calcPlan(order.price);
+  const depositPaid = order.deposit === 'yes';
+  const monthsPaid = order.months || 0;
+  const remaining = plan.total - (depositPaid ? plan.deposit : 0) - (monthsPaid * plan.monthly);
+  const status = orderStatusLabel(order);
+  resultBox.innerHTML = `
+    ${buildTimeline(order)}
+    <div class="track-card" style="margin-top:10px;">
+      <div class="t-row"><span>Item</span><span>${escapeHtml(order.item)}</span></div>
+      <div class="t-row"><span>Total payable</span><span>${naira(plan.total)}</span></div>
+      <div class="t-row"><span>Deposit</span><span>${depositPaid ? 'Received ✓' : 'Not yet'}</span></div>
+      <div class="t-row"><span>Monthly payments</span><span>${monthsPaid} of 4 made</span></div>
+      <div class="t-row"><span>Balance remaining</span><span>${naira(Math.max(remaining,0))}</span></div>
+      <div class="t-row total"><span>Status</span><span class="t-status">${status.text}</span></div>
+    </div>
+  `;
+});
+
+
+let currentImage = '';
+
+document.getElementById('f-image').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  compressImage(file, 800, 0.7).then(dataUrl=>{
+    currentImage = dataUrl;
+    renderImagePreview();
+  }).catch(()=>{
+    showToast('Could not process that photo');
+    e.target.value = '';
+  });
+});
+
+function compressImage(file, maxDim, quality){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        let w = img.width, h = img.height;
+        if(w > h && w > maxDim){ h = Math.round(h * maxDim / w); w = maxDim; }
+        else if(h > maxDim){ w = Math.round(w * maxDim / h); h = maxDim; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        let dataUrl = canvas.toDataURL('image/jpeg', quality);
+        if(dataUrl.length > 700000){
+          dataUrl = canvas.toDataURL('image/jpeg', 0.4);
+        }
+        if(dataUrl.length > 700000){
+          reject(new Error('too large'));
+        }else{
+          resolve(dataUrl);
+        }
+      };
+      img.onerror = reject;
+      img.src = ev.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderImagePreview(){
+  const wrap = document.getElementById('image-preview-wrap');
+  if(currentImage){
+    wrap.innerHTML = `<img class="preview-thumb" src="${currentImage}"><br><button type="button" class="remove-photo" id="remove-photo-btn">Remove photo</button>`;
+    document.getElementById('remove-photo-btn').addEventListener('click', ()=>{
+      currentImage = '';
+      document.getElementById('f-image').value = '';
+      renderImagePreview();
+    });
+  }else{
+    wrap.innerHTML = '';
+  }
+}
+
+document.getElementById('save-item-btn').addEventListener('click', ()=>{
+  const nameEl = document.getElementById('f-name');
+  const priceEl = document.getElementById('f-price');
+  const stockEl = document.getElementById('f-stock');
+  const catEl  = document.getElementById('f-cat');
+  const editIdEl = document.getElementById('edit-id');
+  const saveBtn = document.getElementById('save-item-btn');
+
+  const name  = nameEl.value.trim();
+  const price = parseFloat(priceEl.value);
+  const stock = stockEl.value;
+  const category = catEl.value;
+
+  if(!name){ showToast('Enter an item name'); nameEl.focus(); return; }
+  if(!price || price<=0){ showToast('Enter a valid price'); priceEl.focus(); return; }
+  if(!firebaseReady){ showToast('Not connected — check your internet'); return; }
+
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving...';
+
+  const data = { name, price, stock, category, image: currentImage };
+  let writePromise;
+  if(editIdEl.value){
+    writePromise = itemsRef.doc(editIdEl.value).update(data);
+  }else{
+    data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+    writePromise = itemsRef.add(data);
+  }
+
+  writePromise.then(()=>{
+    showToast(editIdEl.value ? 'Item updated' : 'Item added');
+    nameEl.value=''; priceEl.value=''; stockEl.value='in'; catEl.value='Kitchen'; editIdEl.value='';
+    currentImage=''; document.getElementById('f-image').value='';
+    renderImagePreview();
+  }).catch((err)=>{
+    console.error(err);
+    showToast('Could not save — check your internet');
+  }).finally(()=>{
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save item';
+  });
+});
+
+// ---------- Toast ----------
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+// ---------- Download app file for sharing ----------
+document.getElementById('export-btn').addEventListener('click', ()=>{
+  const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'Corper-EasyBuy-App.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Downloaded — ready to share');
+});
+
+// ---------- Copy catalog as WhatsApp-ready text ----------
+document.getElementById('copy-text-btn').addEventListener('click', ()=>{
+  let text = "*CORPER EASYBUY — Current Stock*\n_Serve Now, Pay Small (25% deposit, 4 months, 5% interest)_\n\n";
+  items.forEach(item=>{
+    const plan = calcPlan(item.price);
+    text += `*${item.name}* — ${naira(item.price)}\n`;
+    if(item.stock==='in'){
+      text += `  Deposit: ${naira(plan.deposit)} | Monthly: ${naira(plan.monthly)} x4 | Total: ${naira(plan.total)}\n\n`;
+    }else{
+      text += `  (Sold out)\n\n`;
+    }
+  });
+  navigator.clipboard.writeText(text).then(()=>{
+    showToast('Copied — paste into WhatsApp');
+  }).catch(()=>{
+    showToast('Could not copy — select and copy manually');
+  });
+});
+
+// ---------- Referral code generator ----------
+function generateCode(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = 'CEB-';
+  for(let i=0;i<4;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+
+// ---------- Check referral earnings (customer side) ----------
+document.getElementById('check-ref-btn').addEventListener('click', async ()=>{
+  const phone = normPhone(document.getElementById('ref-phone').value);
+  if(!phone){ showToast('Enter your phone number'); return; }
+  if(!firebaseReady){ showToast('Not connected — check your internet'); return; }
+
+  const resultBox = document.getElementById('ref-result');
+  const payoutWrap = document.getElementById('payout-request-wrap');
+  resultBox.innerHTML = '<p style="font-size:13px;color:#7A7264;margin:10px 0 0;">Checking...</p>';
+  payoutWrap.classList.add('hidden');
+
+  // look up or create referrer record
+  const existing = referrers.find(r => normPhone(r.phone) === phone);
+  if(existing){
+    const hasPending = payouts.some(p => normPhone(p.phone) === phone && p.status === 'pending');
+    resultBox.innerHTML = `
+      <div class="ref-code-box">
+        <div class="ref-code-label">Your referral code</div>
+        <div class="ref-code-value">${existing.code}</div>
+        <div class="ref-earnings">Total earnings: <strong>${naira(existing.earnings || 0)}</strong></div>
+      </div>
+      <p style="font-size:12px;color:#7A7264;margin:10px 0 0;line-height:1.5;">Share this code with anyone who wants to order. When they pay their deposit and mention your code, you earn <strong>1%</strong> of their purchase balance.</p>
+    `;
+    if((existing.earnings || 0) > 0 && !hasPending){
+      payoutWrap.classList.remove('hidden');
+    }
+  }else{
+    // auto-create referrer record
+    let code = generateCode();
+    // make sure code is unique
+    while(referrers.some(r=>r.code===code)) code = generateCode();
+    referrersRef.add({ phone, code, earnings: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+      .then(()=>{
+        resultBox.innerHTML = `
+          <div class="ref-code-box">
+            <div class="ref-code-label">Your referral code (just created)</div>
+            <div class="ref-code-value">${code}</div>
+            <div class="ref-earnings">Total earnings: <strong>₦0</strong></div>
+          </div>
+          <p style="font-size:12px;color:#7A7264;margin:10px 0 0;line-height:1.5;">Share this code with anyone who wants to order. When they pay their deposit and mention your code, you earn <strong>1%</strong> of their purchase balance.</p>
+        `;
+      }).catch(()=>{
+        resultBox.innerHTML = '<p style="color:var(--red);font-size:13px;margin-top:10px;">Could not create referral code — check your internet.</p>';
+      });
+  }
+});
+
+document.getElementById('request-payout-btn').addEventListener('click', ()=>{
+  const phone = normPhone(document.getElementById('ref-phone').value);
+  const referrer = referrers.find(r => normPhone(r.phone) === phone);
+  if(!referrer || (referrer.earnings||0) <= 0){ showToast('No earnings to request'); return; }
+  if(!firebaseReady){ showToast('Not connected — check your internet'); return; }
+
+  payoutsRef.add({
+    phone: referrer.phone,
+    code: referrer.code,
+    amount: referrer.earnings,
+    status: 'pending',
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(()=>{
+    showToast('Payout request sent');
+    document.getElementById('payout-request-wrap').classList.add('hidden');
+  }).catch(()=>showToast('Could not submit request — check your internet'));
+});
+
+// ---------- Admin: render payout requests ----------
+function renderPayouts(){
+  const list = document.getElementById('payouts-list');
+  if(!list) return;
+  list.innerHTML = '';
+  const pending = payouts.filter(p=>p.status==='pending');
+  if(pending.length===0){
+    list.innerHTML = '<div class="empty-state">No pending payout requests.</div>';
+    return;
+  }
+  pending.forEach(p=>{
+    const row = document.createElement('div');
+    row.className = 'payout-row';
+    row.innerHTML = `
+      <div>
+        <div class="p-name">${escapeHtml(p.phone)} · ${escapeHtml(p.code)}</div>
+        <div style="font-size:11px;color:#A79E8C;">Requested ${p.createdAt&&p.createdAt.toDate?p.createdAt.toDate().toLocaleDateString('en-NG'):''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="p-amount">${naira(p.amount)}</span>
+        <button class="icon-btn toggle-in" title="Mark paid" data-pid="${p.id}" data-pphone="${p.phone}" data-pamount="${p.amount}">✓</button>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+  list.querySelectorAll('[data-pid]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(!firebaseReady){ showToast('Not connected'); return; }
+      if(!confirm('Confirm payout of ' + naira(btn.dataset.pamount) + ' to ' + btn.dataset.pphone + '?')) return;
+      const phone = normPhone(btn.dataset.pphone);
+      payoutsRef.doc(btn.dataset.pid).update({ status: 'paid', paidAt: firebase.firestore.FieldValue.serverTimestamp() })
+        .then(()=>{
+          // Reset referrer earnings to 0 after payout
+          const referrer = referrers.find(r => normPhone(r.phone) === phone);
+          if(referrer) referrersRef.doc(referrer.id).update({ earnings: 0 });
+          showToast('Marked as paid');
+        })
+        .catch(()=>showToast('Could not update — check connection'));
+    });
+  });
+}
+
+// ---------- Category filter & search ----------
+document.querySelectorAll('.cat-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeCat = btn.dataset.cat;
+    renderCatalog();
+  });
+});
+
+document.getElementById('catalog-search').addEventListener('input', (e)=>{
+  searchQuery = e.target.value.trim();
+  renderCatalog();
+});
+
+// ---------- Init ----------
+renderCatalog(); // shows empty state instantly; Firestore listener repaints once data arrives
+</script>
+</body>
+</html>
