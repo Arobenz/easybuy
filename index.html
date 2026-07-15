@@ -469,6 +469,153 @@
   .unverified-badge{display:inline-block;background:#FBF0DC;color:#9C6B1A;font-size:10px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.05em;padding:2px 8px;border-radius:20px;margin-left:4px;}
   .notes-text{font-size:11px;color:#7A7264;font-style:italic;margin-top:3px;}
 
+  /* CATALOG GRID */
+  .catalog-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    margin-bottom:20px;
+  }
+  @media(min-width:600px){ .catalog-grid{ grid-template-columns:repeat(3,1fr); } }
+  @media(min-width:900px){ .catalog-grid{ grid-template-columns:repeat(4,1fr); } }
+
+  .grid-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:12px;
+    overflow:hidden;
+    cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s ease;
+    position:relative;
+  }
+  .grid-card:active{ transform:scale(0.97); }
+  .grid-card-img{
+    width:100%;
+    aspect-ratio:1;
+    object-fit:cover;
+    background:var(--sage);
+    display:block;
+  }
+  .grid-card-img-placeholder{
+    width:100%;
+    aspect-ratio:1;
+    background:var(--sage);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
+  }
+  .grid-card-body{
+    padding:8px;
+  }
+  .grid-card-name{
+    font-size:12px;
+    font-weight:600;
+    color:var(--charcoal);
+    margin:0 0 3px;
+    line-height:1.3;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .grid-card-price{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:600;
+    color:var(--green-ink);
+    margin:0 0 4px;
+  }
+  .grid-card-deposit{
+    font-size:10px;
+    color:#7A7264;
+    margin:0;
+  }
+  .grid-card-soldout{
+    position:absolute;
+    top:6px;right:6px;
+    background:rgba(181,73,59,0.9);
+    color:#fff;
+    font-size:9px;
+    font-family:'IBM Plex Mono',monospace;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:2px 6px;
+    border-radius:10px;
+  }
+  .grid-card-cat{
+    position:absolute;
+    top:6px;left:6px;
+    background:rgba(27,122,61,0.85);
+    color:#fff;
+    font-size:9px;
+    font-family:'IBM Plex Mono',monospace;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    padding:2px 6px;
+    border-radius:10px;
+  }
+
+  /* DETAIL PAGE */
+  .detail-img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+    border-radius:12px;
+    margin-bottom:14px;
+    display:block;
+    background:var(--sage);
+  }
+  .detail-img-placeholder{
+    width:100%;
+    height:180px;
+    background:var(--sage);
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:48px;
+    margin-bottom:14px;
+  }
+  .detail-name{
+    font-family:'Fraunces',serif;
+    font-size:22px;
+    font-weight:700;
+    margin:0 0 6px;
+    color:var(--charcoal);
+  }
+  .detail-price{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:20px;
+    font-weight:600;
+    color:var(--green-ink);
+    margin:0 0 10px;
+  }
+  .detail-desc{
+    font-size:14px;
+    color:#4A4A44;
+    line-height:1.7;
+    margin:0 0 16px;
+  }
+  .detail-order-btn{
+    width:100%;
+    background:var(--green-deep);
+    color:#fff;
+    border:none;
+    padding:14px;
+    border-radius:10px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:15px;
+    cursor:pointer;
+    margin-top:6px;
+  }
+  .detail-order-btn:disabled{
+    background:var(--line);
+    color:#A79E8C;
+    cursor:not-allowed;
+  }
+
   /* CATEGORY FILTER */
   .cat-btn{
     flex-shrink:0;
@@ -567,7 +714,13 @@
       <button class="cat-btn" data-cat="Other">Other</button>
     </div>
     <div class="section-label"><span class="sync-dot" id="sync-dot"></span><span id="catalog-count"></span></div>
-    <div id="catalog-list"></div>
+    <div id="catalog-list" class="catalog-grid"></div>
+  </div>
+
+  <!-- ITEM DETAIL VIEW -->
+  <div class="view hidden" id="view-detail">
+    <button id="back-to-catalog" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--green-deep);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;cursor:pointer;padding:0 0 14px;">← Back to Catalog</button>
+    <div id="detail-content"></div>
   </div>
 
   <!-- REGISTER VIEW -->
@@ -707,6 +860,10 @@
         <div class="field">
           <label>Item name</label>
           <input type="text" id="f-name" placeholder="e.g. Electric Kettle 1.7L">
+        </div>
+        <div class="field">
+          <label>Description</label>
+          <textarea id="f-desc" placeholder="e.g. 1.7L capacity, auto shut-off, stainless steel interior. Perfect for corper lodge." style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:13px;background:var(--paper);resize:none;height:72px;"></textarea>
         </div>
         <div class="field">
           <label>Category</label>
@@ -905,11 +1062,13 @@ if(firebaseReady){
     orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     if(adminUnlocked) renderOrders();
     renderMyOrders();
+    checkNewOrders(orders);
   }, (err)=>console.error('Orders sync error:', err));
 
   receiptsRef.orderBy('createdAt','desc').onSnapshot((snapshot)=>{
     receipts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     if(adminUnlocked) renderReceipts();
+    checkNewReceipts(receipts);
   }, (err)=>console.error('Receipts sync error:', err));
 
   referrersRef.onSnapshot((snapshot)=>{
@@ -980,7 +1139,6 @@ function renderCatalog(){
   const countEl = document.getElementById('catalog-count');
   list.innerHTML = '';
 
-  // filter
   let filtered = items.filter(item=>{
     const matchCat = activeCat === 'All' || (item.category || 'Other') === activeCat;
     const matchSearch = !searchQuery || item.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -1006,60 +1164,69 @@ function renderCatalog(){
     const plan = calcPlan(item.price);
     const cat = item.category || 'Other';
     const card = document.createElement('div');
-    card.className = 'item-card';
+    card.className = 'grid-card';
     card.innerHTML = `
-      ${item.image ? `<img class="item-photo" src="${item.image}" alt="${escapeHtml(item.name)}">` : ''}
-      <div class="item-top">
-        <div>
-          <p class="item-name">${escapeHtml(item.name)}</p>
-          <p class="item-price">${naira(item.price)}</p>
-        </div>
-        <span class="stock-badge ${item.stock}">${item.stock==='in' ? 'In stock' : 'Sold out'}</span>
-      </div>
-      <div style="margin:4px 0 8px;">
-        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.06em;background:var(--sage);color:var(--green-ink);padding:2px 8px;border-radius:20px;">${escapeHtml(cat)}</span>
-      </div>
-      <button class="see-plan" data-id="${item.id}" ${item.stock==='out' ? 'disabled' : ''}>
-        ${item.stock==='out' ? 'Not available' : 'See payment plan ↓'}
-      </button>
-      ${item.stock==='in' ? `<button class="order-btn" data-name="${escapeHtml(item.name)}" data-price="${item.price}" style="margin-top:6px;width:100%;background:var(--green-deep);color:#fff;border:none;padding:10px;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;cursor:pointer;">Order this →</button>` : ''}
-      <div class="slip-holder"></div>
-    `;
-    list.appendChild(card);
-
-    const btn = card.querySelector('.see-plan');
-    const holder = card.querySelector('.slip-holder');
-    let open = false;
-    btn.addEventListener('click', ()=>{
-      if(item.stock==='out') return;
-      open = !open;
-      if(open){
-        btn.textContent = 'Hide payment plan ↑';
-        holder.innerHTML = `
-          <div class="slip">
-            <div class="slip-title">Payment breakdown</div>
-            <div class="slip-row"><span>Item price</span><span>${naira(item.price)}</span></div>
-            <div class="slip-row"><span>Deposit (25%)</span><span>${naira(plan.deposit)}</span></div>
-            <div class="slip-row"><span>Balance + 5% interest</span><span>${naira(plan.balanceWithInterest)}</span></div>
-            <div class="slip-row"><span>Monthly × 4 months</span><span>${naira(plan.monthly)}</span></div>
-            <div class="slip-row total"><span>Total payable</span><span>${naira(plan.total)}</span></div>
-          </div>
-        `;
-      }else{
-        btn.textContent = 'See payment plan ↓';
-        holder.innerHTML = '';
+      ${item.stock==='out' ? '<div class="grid-card-soldout">Sold out</div>' : ''}
+      <div class="grid-card-cat">${escapeHtml(cat)}</div>
+      ${item.image
+        ? `<img class="grid-card-img" src="${item.image}" alt="${escapeHtml(item.name)}">`
+        : `<div class="grid-card-img-placeholder">🛍️</div>`
       }
-    });
-
-    // Order this button
-    const orderBtn = card.querySelector('.order-btn');
-    if(orderBtn){
-      orderBtn.addEventListener('click', ()=>{
-        prefillRegistration(item.name, item.price);
-      });
-    }
+      <div class="grid-card-body">
+        <p class="grid-card-name">${escapeHtml(item.name)}</p>
+        <p class="grid-card-price">${naira(item.price)}</p>
+        <p class="grid-card-deposit">Deposit: ${naira(plan.deposit)}</p>
+      </div>
+    `;
+    card.addEventListener('click', ()=> showItemDetail(item));
+    list.appendChild(card);
   });
 }
+
+// ---------- Item detail view ----------
+function showItemDetail(item){
+  const plan = calcPlan(item.price);
+  // hide catalog, show detail
+  document.getElementById('view-catalog').classList.add('hidden');
+  document.getElementById('view-detail').classList.remove('hidden');
+
+  const content = document.getElementById('detail-content');
+  content.innerHTML = `
+    ${item.image
+      ? `<img class="detail-img" src="${item.image}" alt="${escapeHtml(item.name)}">`
+      : `<div class="detail-img-placeholder">🛍️</div>`
+    }
+    <p class="detail-name">${escapeHtml(item.name)}</p>
+    <p class="detail-price">${naira(item.price)}</p>
+    ${item.description ? `<p class="detail-desc">${escapeHtml(item.description)}</p>` : ''}
+    <div class="slip" style="margin-bottom:16px;">
+      <div class="slip-title">Payment plan</div>
+      <div class="slip-row"><span>Item price</span><span>${naira(item.price)}</span></div>
+      <div class="slip-row"><span>Deposit (25%)</span><span>${naira(plan.deposit)}</span></div>
+      <div class="slip-row"><span>Balance + 5% interest</span><span>${naira(plan.balanceWithInterest)}</span></div>
+      <div class="slip-row"><span>Monthly × 4 months</span><span>${naira(plan.monthly)}</span></div>
+      <div class="slip-row total"><span>Total payable</span><span>${naira(plan.total)}</span></div>
+    </div>
+    <button class="detail-order-btn" id="detail-order-btn" ${item.stock==='out'?'disabled':''}>
+      ${item.stock==='out' ? 'Currently out of stock' : 'Order this →'}
+    </button>
+  `;
+
+  if(item.stock==='in'){
+    document.getElementById('detail-order-btn').addEventListener('click', ()=>{
+      prefillRegistration(item.name, item.price);
+    });
+  }
+
+  // scroll to top
+  document.getElementById('view-detail').scrollTop = 0;
+  window.scrollTo(0,0);
+}
+
+document.getElementById('back-to-catalog').addEventListener('click', ()=>{
+  document.getElementById('view-detail').classList.add('hidden');
+  document.getElementById('view-catalog').classList.remove('hidden');
+});
 
 // ---------- Prefill registration from catalog ----------
 function prefillRegistration(itemName, itemPrice){
@@ -1067,6 +1234,7 @@ function prefillRegistration(itemName, itemPrice){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelector('[data-tab=register]').classList.add('active');
   document.getElementById('view-catalog').classList.add('hidden');
+  document.getElementById('view-detail').classList.add('hidden');
   document.getElementById('view-register').classList.remove('hidden');
   document.getElementById('view-payments').classList.add('hidden');
   document.getElementById('view-admin').classList.add('hidden');
@@ -1127,6 +1295,7 @@ function switchTab(tabName){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelector('[data-tab='+tabName+']').classList.add('active');
   document.getElementById('view-catalog').classList.toggle('hidden', tabName!=='catalog');
+  document.getElementById('view-detail').classList.add('hidden');
   document.getElementById('view-register').classList.toggle('hidden', tabName!=='register');
   document.getElementById('view-payments').classList.toggle('hidden', tabName!=='payments');
   document.getElementById('view-admin').classList.toggle('hidden', tabName!=='admin');
@@ -1194,6 +1363,7 @@ function renderAdmin(){
       }else if(action==='edit'){
         document.getElementById('edit-id').value = items[idx].id;
         document.getElementById('f-name').value = items[idx].name;
+        document.getElementById('f-desc').value = items[idx].description || '';
         document.getElementById('f-price').value = items[idx].price;
         document.getElementById('f-stock').value = items[idx].stock;
         document.getElementById('f-cat').value = items[idx].category || 'Other';
@@ -1734,6 +1904,7 @@ document.getElementById('save-item-btn').addEventListener('click', ()=>{
   const price = parseFloat(priceEl.value);
   const stock = stockEl.value;
   const category = catEl.value;
+  const description = document.getElementById('f-desc').value.trim();
 
   if(!name){ showToast('Enter an item name'); nameEl.focus(); return; }
   if(!price || price<=0){ showToast('Enter a valid price'); priceEl.focus(); return; }
@@ -1742,7 +1913,7 @@ document.getElementById('save-item-btn').addEventListener('click', ()=>{
   saveBtn.disabled = true;
   saveBtn.textContent = 'Saving...';
 
-  const data = { name, price, stock, category, image: currentImage };
+  const data = { name, price, stock, category, description, image: currentImage };
   let writePromise;
   if(editIdEl.value){
     writePromise = itemsRef.doc(editIdEl.value).update(data);
@@ -1754,6 +1925,7 @@ document.getElementById('save-item-btn').addEventListener('click', ()=>{
   writePromise.then(()=>{
     showToast(editIdEl.value ? 'Item updated' : 'Item added');
     nameEl.value=''; priceEl.value=''; stockEl.value='in'; catEl.value='Kitchen'; editIdEl.value='';
+    document.getElementById('f-desc').value='';
     currentImage=''; document.getElementById('f-image').value='';
     renderImagePreview();
   }).catch((err)=>{
@@ -1938,6 +2110,61 @@ document.getElementById('catalog-search').addEventListener('input', (e)=>{
   searchQuery = e.target.value.trim();
   renderCatalog();
 });
+
+// ---------- Browser notifications ----------
+let notifPermission = false;
+let knownOrderIds = new Set();
+let knownReceiptIds = new Set();
+
+function requestNotifPermission(){
+  if(!('Notification' in window)) return;
+  if(Notification.permission === 'granted'){
+    notifPermission = true;
+  }else if(Notification.permission !== 'denied'){
+    Notification.requestPermission().then(p=>{
+      notifPermission = p === 'granted';
+    });
+  }
+}
+
+function sendNotif(title, body){
+  if(!notifPermission) return;
+  try{
+    new Notification(title, {
+      body,
+      icon: 'https://arobenz.github.io/easybuy/icon.png',
+      badge: 'https://arobenz.github.io/easybuy/icon.png'
+    });
+  }catch(e){ console.log('Notification error:', e); }
+}
+
+function checkNewOrders(newOrders){
+  if(knownOrderIds.size === 0){
+    newOrders.forEach(o => knownOrderIds.add(o.id));
+    return;
+  }
+  newOrders.forEach(o=>{
+    if(!knownOrderIds.has(o.id)){
+      knownOrderIds.add(o.id);
+      sendNotif('New Order 🛒', `${o.name} ordered ${o.item} — ${naira(o.price)}`);
+    }
+  });
+}
+
+function checkNewReceipts(newReceipts){
+  if(knownReceiptIds.size === 0){
+    newReceipts.forEach(r => knownReceiptIds.add(r.id));
+    return;
+  }
+  newReceipts.forEach(r=>{
+    if(!knownReceiptIds.has(r.id)){
+      knownReceiptIds.add(r.id);
+      sendNotif('Payment Receipt 💰', `${r.phone} submitted a payment receipt`);
+    }
+  });
+}
+
+requestNotifPermission();
 
 // ---------- Init ----------
 renderCatalog(); // shows empty state instantly; Firestore listener repaints once data arrives
